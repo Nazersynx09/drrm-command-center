@@ -1,5 +1,23 @@
 import { prisma } from '@/lib/prisma';
 
+type PopulationEntry = {
+  families: number;
+  persons: number;
+  evacuationCenters: number;
+  personsInside: number;
+  personsOutside: number;
+};
+
+type SitrepSummaryRow = {
+  id: string;
+  municipalityId: string;
+  affectedPopulation: PopulationEntry[];
+  casualties: Array<{ id: string }>;
+  damagedHouses: Array<{ totalDamaged: number; amount: number | string | null }>;
+  infrastructures: Array<{ damagedCount: number; damageCost: number | string | null }>;
+  preemptiveEvacuation: { families: number } | null;
+};
+
 export async function getActiveIncident() {
   return prisma.incident.findFirst({
     where: { isActive: true },
@@ -69,26 +87,26 @@ export async function getDashboardSummary() {
           select: { families: true },
         },
       },
-    }),
+    }) as unknown as SitrepSummaryRow[],
     prisma.municipality.count({
       where: { province: { code: 'ILOILO' } },
     }),
   ]);
 
-  const population = sitreps.flatMap(s => s.affectedPopulation);
-  const damagedHouses = sitreps.flatMap(s => s.damagedHouses);
-  const infrastructures = sitreps.flatMap(s => s.infrastructures);
+  const population = sitreps.flatMap((s: SitrepSummaryRow) => s.affectedPopulation ?? []);
+  const damagedHouses = sitreps.flatMap((s: SitrepSummaryRow) => s.damagedHouses ?? []);
+  const infrastructures = sitreps.flatMap((s: SitrepSummaryRow) => s.infrastructures ?? []);
 
-  const affected = population.reduce((n, x) => n + x.persons, 0);
-  const displaced = population.reduce((n, x) => n + x.personsInside + x.personsOutside, 0);
-  const casualties = sitreps.reduce((n, x) => n + x.casualties.length, 0);
+  const affected = population.reduce((n: number, x: PopulationEntry) => n + x.persons, 0);
+  const displaced = population.reduce((n: number, x: PopulationEntry) => n + x.personsInside + x.personsOutside, 0);
+  const casualties = sitreps.reduce((n: number, x: SitrepSummaryRow) => n + x.casualties.length, 0);
   const damaged =
-    damagedHouses.reduce((n, x) => n + x.totalDamaged, 0) +
-    infrastructures.reduce((n, x) => n + x.damagedCount, 0);
+    damagedHouses.reduce((n: number, x: { totalDamaged: number }) => n + x.totalDamaged, 0) +
+    infrastructures.reduce((n: number, x: { damagedCount: number }) => n + x.damagedCount, 0);
   const cost =
-    damagedHouses.reduce((n, x) => n + Number(x.amount), 0) +
-    infrastructures.reduce((n, x) => n + Number(x.damageCost), 0);
-  const centers = population.reduce((n, x) => n + x.evacuationCenters, 0);
+    damagedHouses.reduce((n: number, x: { amount: number | string | null }) => n + Number(x.amount), 0) +
+    infrastructures.reduce((n: number, x: { damageCost: number | string | null }) => n + Number(x.damageCost), 0);
+  const centers = population.reduce((n: number, x: PopulationEntry) => n + x.evacuationCenters, 0);
   const evacuees = displaced;
 
   return {
@@ -103,7 +121,7 @@ export async function getDashboardSummary() {
     evacuation: { centers, evacuees },
     reporting: {
       activeReports: sitreps.length,
-      affectedLGUs: new Set(sitreps.map(s => s.municipalityId)).size,
+      affectedLGUs: new Set(sitreps.map((s: SitrepSummaryRow) => s.municipalityId)).size,
       totalLGUs: municipalityCount,
     },
     lastUpdated: new Date().toISOString(),
@@ -139,7 +157,7 @@ export async function getIncidentFeed(limit = 50) {
     },
   });
 
-  return rows.map(row => ({
+  return rows.map((row: any) => ({
     id: row.id,
     time: row.incidentDate.toISOString(),
     town: row.barangay.municipality.name,
@@ -188,8 +206,8 @@ export async function getMapData() {
   });
 
   const markers = rows
-    .filter(r => r.barangay.latitude != null && r.barangay.longitude != null)
-    .map(r => ({
+    .filter((r: any) => r.barangay.latitude != null && r.barangay.longitude != null)
+    .map((r: any) => ({
       id: r.id,
       lat: Number(r.barangay.latitude),
       lng: Number(r.barangay.longitude),

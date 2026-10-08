@@ -1,6 +1,6 @@
 import type { AdvisoryData } from './types';
 
-const URL = 'https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH';
+const GDACS_URL = 'https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH';
 
 function levelToType(level: string): AdvisoryData['type'] {
   const value = level.toLowerCase();
@@ -20,7 +20,7 @@ export async function getGdacsAdvisories(): Promise<AdvisoryData[]> {
   const from = new Date(Date.now() - 14 * 86400000).toISOString().slice(0, 10);
   const to = new Date().toISOString().slice(0, 10);
 
-  const url = new URL(URL);
+  const url = new URL(GDACS_URL);
   url.searchParams.set('eventlist', 'EQ;TC;FL;VO;WF;DR');
   url.searchParams.set('fromDate', from);
   url.searchParams.set('toDate', to);
