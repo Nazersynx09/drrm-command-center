@@ -1,0 +1,8 @@
+node_modules
+.next
+public
+data
+package-lock.json
+prisma/migrations
+AGENTS.md
+CLAUDE.md

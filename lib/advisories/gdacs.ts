@@ -40,9 +40,14 @@ export async function getGdacsAdvisories(): Promise<AdvisoryData[]> {
   return features
     .filter((feature: any) => {
       const props = feature?.properties ?? {};
-      return String(featureValue(props, ['iso3', 'ISO3', 'country']))
-        .toUpperCase()
-        .includes('PHL') || String(featureValue(props, ['country'])).toLowerCase().includes('philippines');
+      return (
+        String(featureValue(props, ['iso3', 'ISO3', 'country']))
+          .toUpperCase()
+          .includes('PHL') ||
+        String(featureValue(props, ['country']))
+          .toLowerCase()
+          .includes('philippines')
+      );
     })
     .map((feature: any, index: number) => {
       const props = feature.properties ?? {};
@@ -65,8 +70,12 @@ export async function getGdacsAdvisories(): Promise<AdvisoryData[]> {
         details: {
           Hazard: eventType,
           'Alert level': level,
-          ...(featureValue(props, ['severity', 'severitytext']) != null ? { Severity: String(featureValue(props, ['severity', 'severitytext'])) } : {}),
-          ...(featureValue(props, ['country']) != null ? { Country: String(featureValue(props, ['country'])) } : {}),
+          ...(featureValue(props, ['severity', 'severitytext']) != null
+            ? { Severity: String(featureValue(props, ['severity', 'severitytext'])) }
+            : {}),
+          ...(featureValue(props, ['country']) != null
+            ? { Country: String(featureValue(props, ['country'])) }
+            : {}),
         },
         latitude: Array.isArray(point) ? Number(point[1]) : undefined,
         longitude: Array.isArray(point) ? Number(point[0]) : undefined,

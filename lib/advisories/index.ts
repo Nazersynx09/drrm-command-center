@@ -3,10 +3,7 @@ import { getGdacsAdvisories } from './gdacs';
 import { getPagasaAdvisories } from './pagasa';
 
 export async function getAdvisories(): Promise<AdvisoryData[]> {
-  const results = await Promise.allSettled([
-    getPagasaAdvisories(),
-    getGdacsAdvisories(),
-  ]);
+  const results = await Promise.allSettled([getPagasaAdvisories(), getGdacsAdvisories()]);
 
   const advisories: AdvisoryData[] = [];
   for (const result of results) {

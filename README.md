@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DRRM Command Center
 
-## Getting Started
+Executive dashboard for the Iloilo Provincial DRRM Office: live incident figures from SITREPs, an
+affected-area map, and external PAGASA / GDACS advisories.
 
-First, run the development server:
+## Stack
+
+Next.js (App Router), React, Tailwind CSS v4, Prisma + PostgreSQL.
+
+## Setup
 
 ```bash
+npm install
+cp .env.example .env.local   # fill in DATABASE_URL and optionally PAGASA_API_TOKEN
+npx prisma generate
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project layout
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+app/
+  page.tsx                    # renders <Dashboard />
+  api/dashboard/{summary,incidents,map}/route.ts
+  api/advisories/route.ts
+components/dashboard/         # Dashboard (client shell), Header, ScorecardRow, MapPanel,
+                              # LiveMap, AdvisoryPanel, IncidentStream, DetailModals, Modal
+hooks/useDashboardData.ts     # fetches and polls the API every 30 s
+lib/
+  dashboard/queries.ts        # Prisma queries (server only)
+  dashboard/types.ts          # response types shared with the client
+  advisories/                 # PAGASA and GDACS adapters + aggregator
+  format.ts  theme.ts         # formatting helpers, light/dark class tokens
+  prisma.ts                   # Prisma client singleton
+prisma/schema.prisma
+data/                         # source GIS files, not served
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## API
 
-## Learn More
+- `GET /api/dashboard/summary`
+- `GET /api/dashboard/incidents?limit=50`
+- `GET /api/dashboard/map`
+- `GET /api/advisories`
 
-To learn more about Next.js, take a look at the following resources:
+## Scripts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`npm run dev`, `build`, `lint`, `typecheck`, `format`, `format:check`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Data notes
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Internal figures come from PostgreSQL via Prisma. PAGASA and GDACS advisories are fetched at request
+time and are not stored. The schema has no "Missing" casualty status and no evacuation-center model, so
+the dashboard reports barangay-level evacuation data only.

@@ -98,14 +98,20 @@ export async function getDashboardSummary() {
   const infrastructures = sitreps.flatMap((s: SitrepSummaryRow) => s.infrastructures ?? []);
 
   const affected = population.reduce((n: number, x: PopulationEntry) => n + x.persons, 0);
-  const displaced = population.reduce((n: number, x: PopulationEntry) => n + x.personsInside + x.personsOutside, 0);
+  const displaced = population.reduce(
+    (n: number, x: PopulationEntry) => n + x.personsInside + x.personsOutside,
+    0,
+  );
   const casualties = sitreps.reduce((n: number, x: SitrepSummaryRow) => n + x.casualties.length, 0);
   const damaged =
     damagedHouses.reduce((n: number, x: { totalDamaged: number }) => n + x.totalDamaged, 0) +
     infrastructures.reduce((n: number, x: { damagedCount: number }) => n + x.damagedCount, 0);
   const cost =
     damagedHouses.reduce((n: number, x: { amount: number | string | null }) => n + Number(x.amount), 0) +
-    infrastructures.reduce((n: number, x: { damageCost: number | string | null }) => n + Number(x.damageCost), 0);
+    infrastructures.reduce(
+      (n: number, x: { damageCost: number | string | null }) => n + Number(x.damageCost),
+      0,
+    );
   const centers = population.reduce((n: number, x: PopulationEntry) => n + x.evacuationCenters, 0);
   const evacuees = displaced;
 

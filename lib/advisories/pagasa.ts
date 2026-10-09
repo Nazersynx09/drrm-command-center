@@ -49,7 +49,8 @@ export async function getPagasaAdvisories(): Promise<AdvisoryData[]> {
     const temperature = first(row, ['temperature', 'temp']);
     const humidity = first(row, ['humidity', 'relativeHumidity']);
     const wind = first(row, ['wind', 'windSpeed', 'wind_speed']);
-    const issuedAt = first(row, ['date', 'datetime', 'forecastDate', 'forecast_date']) ?? new Date().toISOString();
+    const issuedAt =
+      first(row, ['date', 'datetime', 'forecastDate', 'forecast_date']) ?? new Date().toISOString();
 
     return {
       id: `pagasa-${index}-${String(location).replace(/\W+/g, '-').toLowerCase()}`,
