@@ -1,5 +1,5 @@
 export type AdvisoryType = 'Critical' | 'Warning' | 'Info';
-export type AdvisorySource = 'PDRRMO' | 'PAGASA' | 'GDACS';
+export type AdvisorySource = 'PDRRMO' | 'PAGASA' | 'GDACS' | 'Open-Meteo' | 'USGS';
 
 export interface AdvisoryData {
   id: string;

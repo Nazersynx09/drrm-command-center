@@ -49,6 +49,10 @@ data/                         # source GIS files, not served
 
 ## Data notes
 
-Internal figures come from PostgreSQL via Prisma. PAGASA and GDACS advisories are fetched at request
-time and are not stored. The schema has no "Missing" casualty status and no evacuation-center model, so
+Internal figures come from PostgreSQL via Prisma. Advisories are fetched at request time and are not stored:
+Open-Meteo (model forecast, CC BY 4.0, free for non-commercial use), USGS (earthquakes within 300 km),
+GDACS (disaster alerts) and, if `PAGASA_API_TOKEN` is set, the official PAGASA ten-day forecast.
+
+The map uses free OpenFreeMap tiles (no key) rendered with MapLibre GL. Iloilo municipality and barangay
+boundaries are served from `public/geo/`; the original nationwide GADM file is kept in `data/`. The schema has no "Missing" casualty status and no evacuation-center model, so
 the dashboard reports barangay-level evacuation data only.

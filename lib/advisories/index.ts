@@ -1,9 +1,16 @@
 import type { AdvisoryData } from './types';
 import { getGdacsAdvisories } from './gdacs';
 import { getPagasaAdvisories } from './pagasa';
+import { getOpenMeteoAdvisories } from './openmeteo';
+import { getUsgsAdvisories } from './usgs';
 
 export async function getAdvisories(): Promise<AdvisoryData[]> {
-  const results = await Promise.allSettled([getPagasaAdvisories(), getGdacsAdvisories()]);
+  const results = await Promise.allSettled([
+    getPagasaAdvisories(),
+    getGdacsAdvisories(),
+    getOpenMeteoAdvisories(),
+    getUsgsAdvisories(),
+  ]);
 
   const advisories: AdvisoryData[] = [];
   for (const result of results) {

@@ -12,6 +12,8 @@ export async function GET() {
         providers: {
           PAGASA: Boolean(process.env.PAGASA_API_TOKEN),
           GDACS: true,
+          'Open-Meteo': true,
+          USGS: true,
         },
       },
       { headers: { 'Cache-Control': 'no-store' } },

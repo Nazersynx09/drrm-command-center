@@ -47,7 +47,8 @@ export function AdvisoryPanel({ advisories, t, onSelect }: Props) {
           advisories.map((a) => <AdvisoryCard key={a.id} adv={a} t={t} onClick={() => onSelect(a)} />)
         ) : (
           <p className={`text-[10px] p-3 ${t.muted}`}>
-            No external advisories available. Configure PAGASA API access to load PAGASA forecast data.
+            No advisories available right now. Forecast, earthquake and disaster feeds are refreshed
+            automatically.
           </p>
         )}
       </div>

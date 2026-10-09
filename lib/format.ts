@@ -18,14 +18,3 @@ export function timeAgo(value: string) {
   if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
   return `${Math.floor(seconds / 86400)}d ago`;
 }
-
-export function escapeHtml(value: string) {
-  const map: Record<string, string> = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;',
-  };
-  return value.replace(/[&<>"']/g, (c) => map[c]);
-}
